@@ -3,188 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>四素句魔法廚房 - 邏輯創作版</title>
+    <title>四素句魔法廚房 - 合成魔法版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
-            background-color: #f0f9ff; 
+            background-color: #fdfcf0; 
             font-family: "標楷體", "DFKai-SB", "BiauKai", "Microsoft JhengHei", serif; 
             touch-action: manipulation;
         }
 
         .magic-card { transition: all 0.2s; cursor: pointer; user-select: none; }
         .magic-card.selected { 
-            background-color: #fde047 !important; 
-            border-color: #eab308 !important; 
-            transform: scale(1.05); 
-        }
-
-        .wok-area { 
-            background: #374151; 
-            border-radius: 40% 40% 15% 15%; 
-            min-height: 180px; 
-            position: relative; 
-            border-bottom: 8px solid #1f2937; 
-            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+            background-color: #fef08a !important; 
+            border-color: #ca8a04 !important; 
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(202, 138, 4, 0.2);
         }
 
         .bowl { 
-            background: white; border: 4px solid #bae6fd; border-radius: 1.5rem; 
-            padding: 0.75rem; min-height: 200px; display: flex; flex-direction: column; gap: 8px;
+            background: white; border: 4px solid #e2e8f0; border-radius: 2rem; 
+            padding: 1rem; min-height: 180px; display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .wok-area { 
+            background: #475569; 
+            border-radius: 40% 40% 15% 15%; 
+            min-height: 180px; 
+            border-bottom: 12px solid #334155; 
+            box-shadow: inset 0 6px 15px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
         }
 
         .storage-area { 
             background-color: #ffffff; 
-            border: 4px dashed #93c5fd; 
-            border-radius: 2rem; 
+            border: 4px dashed #cbd5e1; 
+            border-radius: 2.5rem; 
             min-height: 150px; 
         }
 
-        @keyframes sizzle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .cooking { animation: sizzle 0.1s infinite; }
-
-        .loader { 
-            border: 4px solid #f3f3f3; border-top: 4px solid #8b5cf6; 
-            border-radius: 50%; width: 40px; height: 40px; 
-            animation: spin 1s linear infinite; display: inline-block; 
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .hint-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 1rem;
-            border: 5px solid #fff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
+        @keyframes spell-glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.05); } }
+        .magic-glow { animation: spell-glow 0.8s infinite; }
 
         .logic-hint-box {
-            padding: 1rem;
+            padding: 1.25rem;
             margin-top: 1rem;
-            border-radius: 0.75rem;
+            border-radius: 1.25rem;
+            border-left: 10px solid;
             text-align: left;
-            border-left: 6px solid;
-            transition: all 0.3s;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body class="p-4 md:p-8 text-slate-800">
 
-    <header class="max-w-5xl mx-auto text-center mb-8">
-        <h1 class="text-4xl md:text-5xl text-blue-600 mb-6 font-bold">🍳 四素句魔法廚房 🍳</h1>
-        
+    <header class="max-w-6xl mx-auto text-center mb-10">
+        <h1 class="text-4xl font-bold text-amber-700 mb-6">🔮 四素句魔法廚房 🔮</h1>
         <div class="flex flex-wrap justify-center gap-3 mb-6">
-            <button onclick="switchLevel(1)" id="btn-lv1" class="level-btn bg-white border-2 border-blue-400 px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-50 transition-all">初階：分類挑戰</button>
-            <button onclick="switchLevel(2)" id="btn-lv2" class="level-btn bg-white border-2 border-blue-400 px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-50 transition-all">中階：四素句創作</button>
-            <button onclick="switchLevel(3)" id="btn-lv3" class="level-btn bg-white border-2 border-blue-400 px-6 py-2 rounded-full font-bold text-lg hover:bg-blue-50 transition-all">高階：邏輯大師</button>
+            <button onclick="switchLevel(1)" id="btn-lv1" class="level-btn px-6 py-2 rounded-full font-bold border-2">初階：食材分類</button>
+            <button onclick="switchLevel(2)" id="btn-lv2" class="level-btn px-6 py-2 rounded-full font-bold border-2">中階：合成魔法</button>
+            <button onclick="switchLevel(3)" id="btn-lv3" class="level-btn px-6 py-2 rounded-full font-bold border-2">高階：魔法大師</button>
         </div>
-        
-        <div id="instruction-box" class="bg-blue-500 text-white p-4 rounded-2xl inline-block px-12 shadow-lg mb-4">
-            <span id="level-task" class="text-xl md:text-2xl font-bold italic">準備好開始魔法烹飪了嗎？</span>
+        <div id="instruction-box" class="bg-amber-600 text-white p-4 rounded-2xl inline-block px-10 shadow-lg border-b-4 border-amber-800">
+            <span id="level-task" class="text-xl font-bold">正在準備魔法食材...</span>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto">
-        <!-- 食材碗區 -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <main class="max-w-6xl mx-auto">
+        <!-- 碗部區域 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="flex flex-col gap-2">
-                <div class="text-center font-bold text-pink-500 text-xl">⏰ 時間</div>
+                <div class="text-center font-bold text-rose-600 text-xl">⏰ 時間</div>
                 <div id="bowl-time" class="bowl"></div>
             </div>
             <div class="flex flex-col gap-2">
-                <div class="text-center font-bold text-blue-500 text-xl">👤 人物</div>
+                <div class="text-center font-bold text-sky-600 text-xl">👤 人物</div>
                 <div id="bowl-person" class="bowl"></div>
             </div>
             <div class="flex flex-col gap-2">
-                <div class="text-center font-bold text-green-500 text-xl">📍 地點</div>
+                <div class="text-center font-bold text-emerald-600 text-xl">📍 地點</div>
                 <div id="bowl-place" class="bowl"></div>
             </div>
             <div class="flex flex-col gap-2">
-                <div class="text-center font-bold text-orange-500 text-xl">🎯 事情</div>
+                <div class="text-center font-bold text-amber-600 text-xl">🎯 事情</div>
                 <div id="bowl-action" class="bowl"></div>
             </div>
         </div>
 
-        <!-- 儲藏室 (初階用) -->
-        <div id="storage-container" class="mb-10">
-            <div id="storage" class="storage-area p-8 flex flex-wrap justify-center items-center gap-4"></div>
+        <!-- 儲藏區 -->
+        <div id="storage-container" class="mb-8">
+            <div id="storage" class="storage-area p-6 flex flex-wrap justify-center gap-3"></div>
         </div>
 
-        <!-- 烹飪與提示 (中高階用) -->
-        <div id="cooking-container" class="grid grid-cols-1 xl:grid-cols-2 gap-10 hidden">
+        <!-- 烹飪與提示區域 -->
+        <div id="cooking-container" class="grid grid-cols-1 lg:grid-cols-2 gap-8 hidden">
             <div class="flex flex-col items-center">
-                <div id="wok" class="wok-area w-full flex flex-wrap items-center justify-center p-8 gap-4 mb-6">
-                    <div id="wok-placeholder" class="text-slate-400 italic text-2xl">請挑選食材放入魔法鍋...</div>
-                    <div id="wok-content" class="flex flex-wrap justify-center gap-3"></div>
+                <div id="wok" class="wok-area w-full flex flex-wrap items-center justify-center p-6 gap-3 mb-6">
+                    <div id="wok-placeholder" class="text-slate-300 italic text-lg">放入四種魔法食材，準備合成魔法！</div>
+                    <div id="wok-content" class="flex flex-wrap justify-center gap-2"></div>
                 </div>
-
-                <div class="flex flex-wrap justify-center gap-4 w-full">
-                    <button id="cook-btn" class="bg-orange-500 text-white px-12 py-4 rounded-full text-2xl shadow-xl font-bold hover:bg-orange-600 active:scale-95 transition-all">開始烹飪</button>
-                    <button id="hint-btn" onclick="generateHintImage()" class="hidden bg-purple-600 text-white px-10 py-4 rounded-full text-2xl shadow-xl font-bold hover:bg-purple-700 active:scale-95 transition-all">🔮 圖片提示</button>
-                    <button onclick="resetAll()" class="bg-white text-slate-500 border-2 border-slate-200 px-8 py-4 rounded-full font-bold text-xl hover:bg-slate-50">重置</button>
+                <div class="flex gap-4">
+                    <button id="cook-btn" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl text-2xl font-bold shadow-lg hover:bg-indigo-700 transition-colors border-b-4 border-indigo-900">✨ 開始合成魔法</button>
+                    <button onclick="resetAll()" class="bg-slate-200 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-300">清空食材</button>
                 </div>
             </div>
             
-            <div id="ai-panel" class="bg-white rounded-[3rem] p-8 border-4 border-purple-100 min-h-[450px] flex flex-col items-center justify-start shadow-inner relative overflow-hidden">
-                <div id="ai-status" class="text-slate-400 text-center my-auto">
-                    <p class="text-2xl mb-2 font-bold">✨ 魔法提示鏡 ✨</p>
-                    <p>組合成四素句後，點擊按鈕，</p>
-                    <p>AI 就會為你畫出故事圖，</p>
-                    <p>還有「邏輯小句子」幫你檢查喔！</p>
-                </div>
-                <div id="ai-result" class="hidden w-full text-center">
-                    <img id="generated-img" src="" alt="Hint Image" class="hint-image mb-4 mx-auto">
-                    <p id="img-desc" class="text-purple-700 font-bold text-xl bg-purple-50 py-2 px-6 rounded-full inline-block mb-4"></p>
-                    
-                    <!-- 邏輯提示句子 -->
-                    <div id="logic-hint" class="logic-hint-box hidden">
-                        <p id="logic-title" class="font-bold text-lg mb-1"></p>
-                        <p id="logic-text" class="text-slate-700 italic text-lg"></p>
-                    </div>
+            <div id="ai-panel" class="bg-white rounded-3xl p-8 border-2 border-amber-100 shadow-inner min-h-[300px]">
+                <h3 class="text-2xl font-bold text-amber-800 mb-4">🧙‍♂️ 魔法廚師的回應：</h3>
+                <div id="feedback-content" class="text-slate-500 text-lg italic leading-relaxed">
+                    請選好魔法碗裡的食材，我就能為你施展合成魔法！
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- 結果彈窗 -->
-    <div id="modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-[2.5rem] p-10 max-w-lg w-full text-center shadow-2xl">
-            <div id="res-emoji" class="text-8xl mb-4">🌟</div>
-            <h2 id="res-title" class="text-4xl font-bold mb-6 text-blue-600"></h2>
-            <div id="res-sentence" class="bg-yellow-50 p-8 rounded-3xl text-3xl mb-6 font-bold border-2 border-yellow-200 leading-relaxed"></div>
-            <p id="res-feedback" class="text-xl text-slate-600 mb-8"></p>
-            <button onclick="closeModal()" class="bg-blue-500 text-white w-full py-5 rounded-2xl font-bold text-2xl hover:bg-blue-600 shadow-lg active:scale-95 transition-all">繼續練習</button>
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-lg w-full text-center shadow-2xl">
+            <div id="res-emoji" class="text-7xl mb-4">✨</div>
+            <h2 id="res-title" class="text-3xl font-bold mb-4 text-amber-700"></h2>
+            <div id="res-sentence" class="bg-amber-50 p-6 rounded-2xl text-2xl mb-6 font-bold border-2 border-amber-100 text-slate-800 leading-normal"></div>
+            <p id="res-feedback" class="text-xl text-slate-600 mb-8 px-4"></p>
+            <button onclick="closeModal()" class="bg-amber-600 text-white w-full py-4 rounded-2xl font-bold text-xl hover:bg-amber-700 shadow-lg">繼續修煉魔法</button>
         </div>
     </div>
 
     <script>
-        const apiKey = ""; 
-        
-        const ingredients = [
-            { id: 't1', type: 'time', word: '今天早上' },
-            { id: 't2', type: 'time', word: '放學以後' },
-            { id: 't3', type: 'time', word: '星期日那天' },
-            { id: 't4', type: 'time', word: '新年第一天' },
-            { id: 'p1', type: 'person', word: '爸爸' },
-            { id: 'p2', type: 'person', word: '小貓' },
-            { id: 'p3', type: 'person', word: '校長' },
-            { id: 'p4', type: 'person', word: '機器人' },
-            { id: 'l1', type: 'place', word: '在圖書館' },
-            { id: 'l2', type: 'place', word: '在廚房裏' },
-            { id: 'l3', type: 'place', word: '在操場上' },
-            { id: 'l4', type: 'place', word: '在電影院' },
-            { id: 'a1', type: 'action', word: '專心地看書' },
-            { id: 'a2', type: 'action', word: '快樂地踢球' },
-            { id: 'a3', type: 'action', word: '忙着煮麵' },
-            { id: 'a4', type: 'action', word: '修復損壞的零件' }
-        ];
-
-        const logicalFaults = {
-            '在圖書館': { forbidden: ['快樂地踢球', '忙着煮麵'], msg: '圖書館需要保持安靜，不適合在那裏踢球或煮麵喔！' },
-            '在廚房裏': { forbidden: ['快樂地踢球', '修復損壞的零件'], msg: '廚房有火源，在裡面踢球或維修機器太危險了！' },
-            '在電影院': { forbidden: ['快樂地踢球', '忙着煮麵'], msg: '電影院裡黑漆漆的，大家都在看戲，不適合煮麵或踢球。' },
-            '小貓': { forbidden: ['專心地看書', '忙着煮麵', '修復損壞的零件'], msg: '小貓雖然可愛，但這對牠來說真的太難了！' }
+        const logicRules = {
+            '在圖書館': {
+                allowed: ['專心地看書', '安靜地睡覺'],
+                reason: '圖書館需要保持安靜，適合看書。在那裡忙著煮麵或練習游泳會干擾到別人喔！'
+            },
+            '在廚房裏': {
+                allowed: ['忙着煮麵', '安靜地睡覺'],
+                reason: '廚房是用來準備美味食物的地方。在那裡踢球或練習游泳太危險了！'
+            },
+            '在操場上': {
+                allowed: ['快樂地踢球', '專心地看書'],
+                reason: '操場空間廣闊，最適合運動。雖然也能看書，但不能在那裡煮麵或練習游泳。'
+            },
+            '在游泳池': {
+                allowed: ['練習游泳'],
+                reason: '游泳池是玩水的地方。在水裡沒辦法煮麵，書本也會濕透的！'
+            },
+            '在電影院': {
+                allowed: ['安靜地睡覺', '專心地看書'],
+                reason: '電影院裡很安靜，適合休息。但那裡不是做運動或煮東西的地方。'
+            }
         };
+
+        const personRules = {
+            '小貓': {
+                allowed: ['安靜地睡覺', '快樂地踢球'],
+                reason: '小貓會玩球和睡覺，但牠們沒辦法讀書、煮麵或去游泳訓練。'
+            },
+            '機器人': {
+                allowed: ['忙着煮麵', '專心地看書', '練習游泳'],
+                reason: '機器人可以學會很多技能，但它們不需要睡覺。'
+            }
+        };
+
+        const ingredients = [
+            { type: 'time', word: '今天早上' }, { type: 'time', word: '放學以後' }, { type: 'time', word: '暑假期間' },
+            { type: 'person', word: '爸爸' }, { type: 'person', word: '小貓' }, { type: 'person', word: '機器人' },
+            { type: 'place', word: '在圖書館' }, { type: 'place', word: '在廚房裏' }, { type: 'place', word: '在游泳池' },
+            { type: 'action', word: '專心地看書' }, { type: 'action', word: '忙着煮麵' }, { type: 'action', word: '練習游泳' },
+            { type: 'action', word: '快樂地踢球' }, { type: 'action', word: '安靜地睡覺' },
+            { type: 'place', word: '在操場上' }, { type: 'place', word: '在電影院' }
+        ];
 
         let currentLevel = 1;
         let selections = { time: null, person: null, place: null, action: null };
@@ -193,50 +179,50 @@
         function switchLevel(lv) {
             currentLevel = lv;
             resetAll();
-            document.querySelectorAll('.level-btn').forEach((btn, idx) => {
-                btn.classList.toggle('bg-blue-600', idx + 1 === lv);
-                btn.classList.toggle('text-white', idx + 1 === lv);
+            document.querySelectorAll('.level-btn').forEach((btn, i) => {
+                btn.className = `level-btn px-6 py-2 rounded-full font-bold border-2 transition-all ${i+1===lv ? 'bg-amber-600 text-white border-amber-700 shadow-md' : 'bg-white text-amber-400 border-amber-100 hover:border-amber-300'}`;
             });
-            document.getElementById('hint-btn').classList.toggle('hidden', lv !== 2);
-            const taskText = document.getElementById('level-task');
-            if (lv === 1) {
-                taskText.innerText = "初階：把食材正確分類到碗裏！";
+            
+            const task = document.getElementById('level-task');
+            if(lv === 1) {
+                task.innerText = "第一階段：請將食材分類到正確的魔法碗裡！";
                 document.getElementById('storage-container').classList.remove('hidden');
                 document.getElementById('cooking-container').classList.add('hidden');
                 renderStorage();
             } else {
-                taskText.innerText = lv === 2 ? "中階：請動動腦筋創作出合理的四素句！" : "高階：從多樣食材中選出最有邏輯的句子！";
+                task.innerText = lv === 2 ? "第二階段：施展魔法，合成一個合理的句子！" : "第三階段：魔法大師挑戰，找出最完美的邏輯！";
                 document.getElementById('storage-container').classList.add('hidden');
                 document.getElementById('cooking-container').classList.remove('hidden');
-                renderOptions(lv === 2 ? 3 : 6);
+                renderOptions();
             }
         }
 
         function renderStorage() {
             const s = document.getElementById('storage');
             s.innerHTML = '';
-            [...ingredients].sort(() => Math.random() - 0.5).slice(0, 12).forEach(item => {
+            ingredients.slice(0, 12).forEach(item => {
                 const card = createCard(item);
                 card.onclick = () => {
-                    const targetBowl = document.getElementById(`bowl-${item.type}`);
-                    targetBowl.appendChild(card);
-                    card.onclick = null;
-                    card.className = "bg-blue-50 border-2 border-blue-200 rounded-lg p-2 font-bold text-center opacity-70";
+                    const bowl = document.getElementById(`bowl-${item.type}`);
+                    const ghost = card.cloneNode(true);
+                    ghost.className = "bg-slate-50 border-2 border-slate-100 rounded-xl p-2 text-sm opacity-50 cursor-default";
+                    bowl.appendChild(ghost);
+                    card.remove();
                     classifiedCount++;
                     if(classifiedCount >= 12) {
-                        document.getElementById('level-task').innerText = "分類完成！現在來煮句子吧！";
-                        document.getElementById('cooking-container').classList.remove('hidden');
+                        document.getElementById('level-task').innerText = "分類完成！點擊上方按鈕進入「合成魔法」挑戰！";
                     }
                 };
                 s.appendChild(card);
             });
         }
 
-        function renderOptions(count) {
+        function renderOptions() {
             ['time', 'person', 'place', 'action'].forEach(type => {
                 const bowl = document.getElementById(`bowl-${type}`);
                 bowl.innerHTML = '';
-                ingredients.filter(i => i.type === type).sort(() => Math.random() - 0.5).slice(0, count).forEach(item => {
+                const pool = (currentLevel === 3) ? ingredients : ingredients.slice(0, 12);
+                pool.filter(i => i.type === type).forEach(item => {
                     const card = createCard(item);
                     card.onclick = () => {
                         bowl.querySelectorAll('.magic-card').forEach(c => c.classList.remove('selected'));
@@ -251,7 +237,7 @@
 
         function createCard(item) {
             const div = document.createElement('div');
-            div.className = "magic-card bg-white border-2 border-blue-100 rounded-xl p-3 font-bold text-center text-lg shadow-sm hover:border-blue-400 transition-colors";
+            div.className = "magic-card bg-white border-2 border-slate-200 rounded-xl p-3 font-bold text-center shadow-sm hover:border-amber-400";
             div.innerText = item.word;
             return div;
         }
@@ -263,7 +249,7 @@
             ['time', 'person', 'place', 'action'].forEach(t => {
                 if(selections[t]) {
                     const tag = document.createElement('div');
-                    tag.className = "bg-yellow-400 px-6 py-2 rounded-2xl font-bold text-2xl shadow-md";
+                    tag.className = "bg-amber-100 text-amber-900 border-2 border-amber-300 px-4 py-2 rounded-xl font-bold shadow-sm";
                     tag.innerText = selections[t];
                     content.appendChild(tag);
                     filled++;
@@ -272,89 +258,58 @@
             document.getElementById('wok-placeholder').style.display = filled > 0 ? 'none' : 'block';
         }
 
-        async function generateHintImage() {
-            if(!selections.person || !selections.place || !selections.action) {
-                alert("食材還沒選好，魔法鏡沒辦法顯現喔！");
-                return;
-            }
-            const status = document.getElementById('ai-status');
-            const result = document.getElementById('ai-result');
-            const img = document.getElementById('generated-img');
-            const logicHint = document.getElementById('logic-hint');
-            const logicTitle = document.getElementById('logic-title');
-            const logicText = document.getElementById('logic-text');
-
-            status.innerHTML = '<div class="loader"></div><p class="mt-4 text-purple-600 font-bold text-xl">正在為你的創作畫圖...</p>';
-            result.classList.add('hidden');
-            
-            const prompt = `Children's book illustration of ${selections.person} ${selections.place} ${selections.action}. Simple, colorful, friendly art style.`;
-            
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ instances: [{ prompt: prompt }], parameters: { sampleCount: 1 } })
-                });
-                
-                const data = await response.json();
-                if(data.predictions?.[0]) {
-                    img.src = `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-                    status.classList.add('hidden');
-                    result.classList.remove('hidden');
-                    document.getElementById('img-desc').innerText = `${selections.person}${selections.place}${selections.action}`;
-                    
-                    // 邏輯檢查
-                    let errorMsg = null;
-                    if(logicalFaults[selections.place]?.forbidden.includes(selections.action)) errorMsg = logicalFaults[selections.place].msg;
-                    else if(logicalFaults[selections.person]?.forbidden.includes(selections.action)) errorMsg = logicalFaults[selections.person].msg;
-
-                    if(errorMsg) {
-                        logicHint.className = "logic-hint-box block bg-red-50 border-red-500 text-red-700";
-                        logicTitle.innerText = "💡 邏輯小提醒：";
-                        logicText.innerText = errorMsg;
-                    } else {
-                        logicHint.className = "logic-hint-box block bg-green-50 border-green-500 text-green-700";
-                        logicTitle.innerText = "✅ 創作真合理：";
-                        logicText.innerText = `你的句子「${selections.person}${selections.action}」在「${selections.place}」發生非常合適喔！`;
-                    }
-                    logicHint.classList.remove('hidden');
-                }
-            } catch (e) {
-                status.innerHTML = '<p class="text-red-500 font-bold">魔法鏡失效，請稍後再試！</p>';
-            }
-        }
-
         document.getElementById('cook-btn').onclick = () => {
             if(!selections.time || !selections.person || !selections.place || !selections.action) {
-                alert("還要再多加一點食材才能煮出四素句喔！");
+                document.getElementById('feedback-content').innerHTML = "<span class='text-rose-500 font-bold'>魔法還沒準備好！請選齊四種魔法食材喔！</span>";
                 return;
             }
-            document.getElementById('wok').classList.add('cooking');
+
+            const wok = document.getElementById('wok');
+            wok.classList.add('magic-glow');
+            
             setTimeout(() => {
-                document.getElementById('wok').classList.remove('cooking');
-                showResult();
-            }, 800);
+                wok.classList.remove('magic-glow');
+                checkLogic();
+            }, 600);
         };
 
-        function showResult() {
+        function checkLogic() {
             const sentence = `${selections.time}，${selections.person}${selections.place}${selections.action}。`;
-            let title = "✨ 烹飪成功！";
-            let feedback = "恭喜你煮出了一個豐富的四素句！";
-            let emoji = "🎉";
-            
-            const placeFault = logicalFaults[selections.place];
-            const personFault = logicalFaults[selections.person];
-            
-            if ((placeFault && placeFault.forbidden.includes(selections.action)) || (personFault && personFault.forbidden.includes(selections.action))) {
-                title = "🥣 句子有點鹹...";
-                feedback = "句子雖然完整，但內容邏輯有點怪怪的，再試試看吧！";
-                emoji = "🍲";
+            let isOk = true;
+            let feedback = "這是一個非常合理的句子！你的邏輯感像魔法一樣精準。";
+            let emoji = "✨";
+            let title = "魔法合成成功！";
+
+            const placeRule = logicRules[selections.place];
+            if (placeRule && !placeRule.allowed.includes(selections.action)) {
+                isOk = false;
+                feedback = placeRule.reason;
+                title = "魔法失去平衡...";
+                emoji = "❓";
             }
-            
+
+            if (isOk) {
+                const pRule = personRules[selections.person];
+                if (pRule && !pRule.allowed.includes(selections.action)) {
+                    isOk = false;
+                    feedback = pRule.reason;
+                    title = "魔法不太協調...";
+                    emoji = "🐱";
+                }
+            }
+
+            const aiPanel = document.getElementById('feedback-content');
+            aiPanel.innerHTML = `
+                <div class="logic-hint-box ${isOk ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-rose-50 border-rose-500 text-rose-700'}">
+                    <p class="font-bold text-xl mb-1">${isOk ? '✅ 魔法生效' : '❌ 魔法失效'}</p>
+                    <p class="text-lg">${feedback}</p>
+                </div>
+            `;
+
             document.getElementById('res-title').innerText = title;
             document.getElementById('res-emoji').innerText = emoji;
             document.getElementById('res-sentence').innerText = sentence;
-            document.getElementById('res-feedback').innerText = feedback;
+            document.getElementById('res-feedback').innerText = isOk ? "你成功合成了一個好句子！" : feedback;
             document.getElementById('modal').classList.remove('hidden');
         }
 
@@ -363,11 +318,9 @@
             classifiedCount = 0;
             document.querySelectorAll('.bowl').forEach(b => b.innerHTML = '');
             updateWok();
-            document.getElementById('ai-status').classList.remove('hidden');
-            document.getElementById('ai-status').innerHTML = '<p class="text-2xl mb-2 font-bold">✨ 魔法提示鏡 ✨</p><p>組合成四素句後，點擊按鈕，</p><p>AI 就會為你畫出故事圖，</p><p>還有「邏輯小句子」幫你檢查喔！</p>';
-            document.getElementById('ai-result').classList.add('hidden');
+            document.getElementById('feedback-content').innerHTML = "請選好魔法碗裡的食材，我就能為你施展合成魔法！";
             if(currentLevel === 1) renderStorage();
-            else renderOptions(currentLevel === 2 ? 3 : 6);
+            else renderOptions();
         }
 
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
